@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 12 - The Music Player Application</title>
+    <!--<script src="js/player.js"></script>-->  
+</head>
+<body>
+    <h1>The Music Player</h1>
+    <!-- ADD DROP DOWN MENU -->
+        <form id="list">
+        <p>Please select a song:</p> 
+            <select id="selectSong">
+
+            </select>           
+    <!-- ADD PLAY BUTTON -->
+            <input type="submit" value="Play">    
+        </form>
+    <!-- ADD SHOW FAVORITE ALBUM BUTTON -->
+    <input type="button" id="favBtn" value="Show my favorite album">
+    <p id="favoriteAlbum"></p>
+
+    <script>
+        //Define the track list in an array
+        let trackList  = [
+            ['Operation Ivy', 'Energy'],
+            ['Blink 182', 'Dude Ranch'],
+            ['New Found Glory', 'Sticks and Stones']
+        ];
+        //Get DOM elements
+        const $ = function(id) {
+            return window.document.getElementById(id);
+        };
+        //Blind the array to the dropdown menu
+        function buildMenu(trackArr) {
+            for (let i = 0; i < trackArr.length; i++) { 
+                $('selectSong').innerHTML += 
+                `<option value = "${trackArr[i]}">${trackArr[i]}</option>`
+            }
+        };
+        buildMenu(trackList);
+        //Create a new Album class
+        function Album(song) {
+            this._song = song;
+            this._played = 0;
+            this.play = function() {
+               this._played ++;
+            }
+            this.display = function() {
+                return `${this._song} has been played ${this._played} times.`;
+            }
+        }    
+        //Add a play function for the selected song
+        $('list').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let selectSong = $('selectSong').value;
+            console.log(selectSong);  
+            localStorage.setItem('song', selectSong);
+            
+            let album = new Album('selectSong');
+            album.play(); 
+        });
+        //Create a played list
+        function PlayedList(album) {
+            this._albums = [];
+            
+            this.addAlbum = function(album) {
+                this._albums.push(album);
+            }
+            this.favoriteAlbum = function() {
+                let max = -1, fav;
+                for (let i = 0; i < this._albums.length; i++) {
+                    if (this._albums[i]._played > max) {
+                        max = this._albums[i]._played;
+                        fav = this._albums[i];
+                    }
+                }
+                //return fav.display();
+            }
+        }
+        $('favBtn').addEventListener('click', (e) => {
+            let playedList = new PlayedList();
+            album = localStorage.getItem('song');
+            playedList.addAlbum(album);
+            
+            console.log(playedList.favoriteAlbum());  
+            $('favoriteAlbum').innterHTML += `Your favorite album is: ${playedList.favoriteAlbum()}`;
+        });
+    </script>
+</body>
+</html>
